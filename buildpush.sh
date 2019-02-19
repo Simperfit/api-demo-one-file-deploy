@@ -9,7 +9,7 @@ export FEATURE_DEPLOY=1
 
 # The project git repository.
 export REPOSITORY=api-platform/demo
-export DOCKER_REPOSITORY=simperfit
+export DOCKER_REPOSITORY=docker.io/simperfit
 # Choose the branch for production deploy.
 export DEPLOYMENT_BRANCH=master
 
