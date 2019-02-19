@@ -6,7 +6,7 @@ php:
   repository: "eu.gcr.io/${PROJECT_ID}/php"
   tag: latest
   pullPolicy: Always
-  replicaCount: 1
+  replicaCount: 2
   mercure:
     jwt: ""
   env: prod
@@ -32,12 +32,34 @@ php:
     - 10.0.0.0/8
     - 172.16.0.0/12
     - 192.168.0.0/16
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
 nginx:
   repository: "eu.gcr.io/${PROJECT_ID}/nginx"
   tag: latest
   pullPolicy: Always
-  replicaCount: 1
+  replicaCount: 3
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
 varnish:
   enabled: true
@@ -45,10 +67,21 @@ varnish:
   repository: "eu.gcr.io/${PROJECT_ID}/varnish"
   tag: latest
   pullPolicy: Always
-  replicaCount: 1
+  replicaCount: 2
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
 mercure:
-  enabled: true
+  enabled: false
   acmeHosts: ""
   allowAnonymous: "1"
   corsAllowedOrigins: "^https?://.*?\\.api-platform\\.com$"
@@ -121,10 +154,10 @@ ingress:
       # - demo-mercure.api-platform.com
   hosts:
     api:
-      host: demo.api-platform.com
+      host: formation.api-platform.com
       serviceName: varnish
     mercure:
-      host: demo-mercure.api-platform.com
+      host: formation-mercure.api-platform.com
       serviceName: mercure
 
 postgresql:
@@ -148,14 +181,14 @@ blackfire:
   image:
     tag: latest
 
-resources: {}
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+   limits:
+    cpu: 100m
+    memory: 128Mi
+   requests:
+    cpu: 100m
+    memory: 128Mi

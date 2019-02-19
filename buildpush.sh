@@ -34,12 +34,12 @@ export VARNISH_REPOSITORY=docker.io/simperfit/varnish
 export TAG=zaza
 
 # Build and push the docker images.
-#docker build --pull -t $PHP_REPOSITORY:$TAG api --target api_platform_php
-#docker build --pull -t $NGINX_REPOSITORY:$TAG api --target api_platform_nginx
-#docker build --pull -t $VARNISH_REPOSITORY:$TAG api --target api_platform_varnish
-#docker push $PHP_REPOSITORY:$TAG
-#docker push $NGINX_REPOSITORY:$TAG
-#docker push $VARNISH_REPOSITORY:$TAG
+docker build --pull -t $PHP_REPOSITORY:$TAG api --target api_platform_php
+docker build --pull -t $NGINX_REPOSITORY:$TAG api --target api_platform_nginx
+docker build --pull -t $VARNISH_REPOSITORY:$TAG api --target api_platform_varnish
+docker push $PHP_REPOSITORY:$TAG
+docker push $NGINX_REPOSITORY:$TAG
+docker push $VARNISH_REPOSITORY:$TAG
 
 # To enable blackfire, set the BLACKFIRE_SERVER_ID and BLACKFIRE_SERVER_TOKEN variables.
 if [[ ! -z $BLACKFIRE_SERVER_ID && ! -z $BLACKFIRE_SERVER_TOKEN ]]; then
@@ -77,7 +77,7 @@ else
     export CLIENT_BUCKET="${CLIENT_SUBDOMAIN}-${RELEASE}.${DOMAIN}"
 fi
 
-    /snap/helm/current/helm delete --purge $RELEASE || echo "No release to purge"
+    helm delete --purge $RELEASE || echo "No release to purge"
     kubectl delete namespace $NAMESPACE --wait --cascade || echo "No namespace to purge"
 
     # Create namespace with kubernetes to add labels on it
@@ -95,7 +95,7 @@ fi
 }
 EOF
 
-/snap/helm/current/helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods zaza ./api/helm/api \
+helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods zaza ./api/helm/api \
     --set php.repository=$PHP_REPOSITORY,php.tag=$TAG \
     --set nginx.repository=$NGINX_REPOSITORY,nginx.tag=$TAG \
     --set varnish.repository=$VARNISH_REPOSITORY,varnish.tag=$TAG \
@@ -118,4 +118,4 @@ EOF
 kubectl exec --namespace=$NAMESPACE -it $(kubectl --namespace=$NAMESPACE get pods -l app=api-php -o jsonpath="{.items[0].metadata.name}") \
     -- sh -c 'APP_ENV=dev composer install -n && bin/console d:s:u --force -e prod && bin/console h:f:l -n -e dev && APP_ENV=prod composer --no-dev install --classmap-authoritative && exit 0'
 
-kubectl port-forward -n zaza service/api 80
+kubectl port-forward -n zaza service/varnish 80
