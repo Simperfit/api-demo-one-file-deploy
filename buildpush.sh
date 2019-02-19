@@ -4,11 +4,9 @@
 # Both CI will make tests but only the one specified will deploy.
 # Current available choices are travis and circleci.
 export CURRENT_CI=zaza
-export NAMESPACE=zaza
 # If you don't want to deploy feature branches, set FEATURE_DEPLOY value to 0.
 export FEATURE_DEPLOY=1
 
-export RELEASE=zaza
 # The project git repository.
 export REPOSITORY=api-platform/demo
 export DOCKER_REPOSITORY=simperfit
@@ -95,7 +93,7 @@ fi
 }
 EOF
 
-helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods zaza ./api/helm/api \
+helm upgrade --install --reset-values --force --namespace=$NAMESPACE --recreate-pods $RELEASE ./api/helm/api \
     --set php.repository=$PHP_REPOSITORY,php.tag=$TAG \
     --set nginx.repository=$NGINX_REPOSITORY,nginx.tag=$TAG \
     --set varnish.repository=$VARNISH_REPOSITORY,varnish.tag=$TAG \

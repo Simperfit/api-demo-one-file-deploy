@@ -20,9 +20,9 @@ spec:
         name: cpu
         target:
           kind: AverageUtilization
-          averageUtilization: 70
+          averageUtilization: 20
     - type: Pods
       pods:
         metric:
           name: packets-per-second
-        targetAverageValue: 1k
+        targetAverageValue: 200
