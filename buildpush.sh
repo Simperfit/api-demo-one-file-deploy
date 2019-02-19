@@ -11,7 +11,7 @@ export FEATURE_DEPLOY=1
 export RELEASE=zaza
 # The project git repository.
 export REPOSITORY=api-platform/demo
-export DOCKER_REPOSITORY=docker.io/simperfit
+export DOCKER_REPOSITORY=simperfit
 # Choose the branch for production deploy.
 export DEPLOYMENT_BRANCH=master
 
@@ -118,5 +118,5 @@ helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods z
 kubectl exec --namespace=$NAMESPACE -it $(kubectl --namespace=$NAMESPACE get pods -l app=api-php -o jsonpath="{.items[0].metadata.name}") \
     -- sh -c 'APP_ENV=dev composer install -n && bin/console d:s:u --force -e prod && bin/console h:f:l -n -e dev && APP_ENV=prod composer --no-dev install --classmap-authoritative && exit 0'
 
-sudo kubectl port-forward -n zaza service/varnish 80
+sudo kubectl port-forward -n zaza service/nginx 80
 #sudo minikube start --vm-driver=none --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf

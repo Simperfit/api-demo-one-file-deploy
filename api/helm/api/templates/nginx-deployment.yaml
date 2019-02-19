@@ -9,6 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.nginx.replicaCount }}
+  maxReplicas: 10
   template:
     metadata:
       labels:
@@ -22,7 +23,7 @@ spec:
           ports:
             - containerPort: 80
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.nginx.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}

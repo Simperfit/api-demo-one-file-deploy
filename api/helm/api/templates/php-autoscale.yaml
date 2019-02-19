@@ -1,0 +1,28 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "name" . }}-php
+  labels:
+    app: {{ template "name" . }}-php
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "name" . }}-php
+  minReplicas: {{ .Values.php.minReplicaCount }}
+  maxReplicas: {{ .Values.php.maxReplicaCount }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          kind: AverageUtilization
+          averageUtilization: 70
+    - type: Pods
+      pods:
+        metric:
+          name: packets-per-second
+        targetAverageValue: 1k

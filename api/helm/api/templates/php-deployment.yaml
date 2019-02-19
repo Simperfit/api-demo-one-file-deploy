@@ -78,8 +78,13 @@ spec:
                   name: {{ template "fullname" . }}
                   key: mercure-jwt
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.php.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
+  {{- if .Values.image.private_registry.enabled }}
+imagePullSecrets:
+  -   name: {{ template "fullname" . }}
+  {{- end }}
+
