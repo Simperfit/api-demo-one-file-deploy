@@ -4,11 +4,11 @@
 # Both CI will make tests but only the one specified will deploy.
 # Current available choices are travis and circleci.
 export CURRENT_CI=zaza
-
+export NAMESPACE=zaza
 # If you don't want to deploy feature branches, set FEATURE_DEPLOY value to 0.
 export FEATURE_DEPLOY=1
 
-export RELEASE=test
+export RELEASE=zaza
 # The project git repository.
 export REPOSITORY=api-platform/demo
 export DOCKER_REPOSITORY=docker.io/simperfit
@@ -48,7 +48,7 @@ fi
 
 # Generate random key & jwt for Mercure if not set
 if [[ -z $MERCURE_JWT_KEY ]]; then
-    sudo npm install --global "@clarketm/jwt-cli"
+    #sudo npm install --global "@clarketm/jwt-cli"
     export MERCURE_JWT_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
     export MERCURE_JWT=$(sudo jwt sign --noCopy '{"mercure": {"publish": ["*"]}}' $MERCURE_JWT_KEY)
 fi
@@ -77,7 +77,7 @@ else
     export CLIENT_BUCKET="${CLIENT_SUBDOMAIN}-${RELEASE}.${DOMAIN}"
 fi
 
-    /snap/helm/current/helm delete --purge $RELEASE || echo "No release to purge"
+    helm delete --purge $RELEASE || echo "No release to purge"
     kubectl delete namespace $NAMESPACE --wait --cascade || echo "No namespace to purge"
 
     # Create namespace with kubernetes to add labels on it
@@ -95,7 +95,7 @@ fi
 }
 EOF
 
-/snap/helm/current/helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods zaza ./api/helm/api \
+helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods zaza ./api/helm/api \
     --set php.repository=$PHP_REPOSITORY,php.tag=$TAG \
     --set nginx.repository=$NGINX_REPOSITORY,nginx.tag=$TAG \
     --set varnish.repository=$VARNISH_REPOSITORY,varnish.tag=$TAG \
@@ -118,4 +118,5 @@ EOF
 kubectl exec --namespace=$NAMESPACE -it $(kubectl --namespace=$NAMESPACE get pods -l app=api-php -o jsonpath="{.items[0].metadata.name}") \
     -- sh -c 'APP_ENV=dev composer install -n && bin/console d:s:u --force -e prod && bin/console h:f:l -n -e dev && APP_ENV=prod composer --no-dev install --classmap-authoritative && exit 0'
 
-kubectl port-forward -n zaza service/api 80
+sudo kubectl port-forward -n zaza service/varnish 80
+#sudo minikube start --vm-driver=none --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf
