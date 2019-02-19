@@ -4,14 +4,14 @@
 # Both CI will make tests but only the one specified will deploy.
 # Current available choices are travis and circleci.
 export CURRENT_CI=zaza
-
+export NAMESPACE=zaza
 # If you don't want to deploy feature branches, set FEATURE_DEPLOY value to 0.
 export FEATURE_DEPLOY=1
 
-export RELEASE=test
+export RELEASE=zaza
 # The project git repository.
 export REPOSITORY=api-platform/demo
-export DOCKER_REPOSITORY=docker.io/simperfit
+export DOCKER_REPOSITORY=simperfit
 # Choose the branch for production deploy.
 export DEPLOYMENT_BRANCH=master
 
@@ -34,12 +34,12 @@ export VARNISH_REPOSITORY=docker.io/simperfit/varnish
 export TAG=zaza
 
 # Build and push the docker images.
-docker build --pull -t $PHP_REPOSITORY:$TAG api --target api_platform_php
-docker build --pull -t $NGINX_REPOSITORY:$TAG api --target api_platform_nginx
-docker build --pull -t $VARNISH_REPOSITORY:$TAG api --target api_platform_varnish
-docker push $PHP_REPOSITORY:$TAG
-docker push $NGINX_REPOSITORY:$TAG
-docker push $VARNISH_REPOSITORY:$TAG
+#docker build --pull -t $PHP_REPOSITORY:$TAG api --target api_platform_php
+#docker build --pull -t $NGINX_REPOSITORY:$TAG api --target api_platform_nginx
+#docker build --pull -t $VARNISH_REPOSITORY:$TAG api --target api_platform_varnish
+#docker push $PHP_REPOSITORY:$TAG
+#docker push $NGINX_REPOSITORY:$TAG
+#docker push $VARNISH_REPOSITORY:$TAG
 
 # To enable blackfire, set the BLACKFIRE_SERVER_ID and BLACKFIRE_SERVER_TOKEN variables.
 if [[ ! -z $BLACKFIRE_SERVER_ID && ! -z $BLACKFIRE_SERVER_TOKEN ]]; then
@@ -48,7 +48,7 @@ fi
 
 # Generate random key & jwt for Mercure if not set
 if [[ -z $MERCURE_JWT_KEY ]]; then
-    sudo npm install --global "@clarketm/jwt-cli"
+    #sudo npm install --global "@clarketm/jwt-cli"
     export MERCURE_JWT_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
     export MERCURE_JWT=$(sudo jwt sign --noCopy '{"mercure": {"publish": ["*"]}}' $MERCURE_JWT_KEY)
 fi
@@ -118,4 +118,5 @@ helm upgrade --install --reset-values --force --namespace=zaza --recreate-pods z
 kubectl exec --namespace=$NAMESPACE -it $(kubectl --namespace=$NAMESPACE get pods -l app=api-php -o jsonpath="{.items[0].metadata.name}") \
     -- sh -c 'APP_ENV=dev composer install -n && bin/console d:s:u --force -e prod && bin/console h:f:l -n -e dev && APP_ENV=prod composer --no-dev install --classmap-authoritative && exit 0'
 
-kubectl port-forward -n zaza service/varnish 80
+sudo kubectl port-forward -n zaza service/varnish 80
+#sudo minikube start --vm-driver=none --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf

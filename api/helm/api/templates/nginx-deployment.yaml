@@ -9,6 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.nginx.replicaCount }}
+  maxReplicas: 10
   template:
     metadata:
       labels:

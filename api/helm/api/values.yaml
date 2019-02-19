@@ -1,12 +1,16 @@
 # Default values for api.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+image:
+  private_registry:
+    enable: false
 php:
   repository: "eu.gcr.io/${PROJECT_ID}/php"
   tag: latest
   pullPolicy: Always
   replicaCount: 2
+  minReplicaCount: 1
+  maxReplicaCount: 10
   mercure:
     jwt: ""
   env: prod
@@ -49,6 +53,8 @@ nginx:
   tag: latest
   pullPolicy: Always
   replicaCount: 3
+  minReplicaCount: 1
+  maxReplicaCount: 10
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -67,7 +73,9 @@ varnish:
   repository: "eu.gcr.io/${PROJECT_ID}/varnish"
   tag: latest
   pullPolicy: Always
-  replicaCount: 2
+  replicaCount: 1
+  minReplicaCount: 1
+  maxReplicaCount: 1
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
